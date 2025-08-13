@@ -1,0 +1,149 @@
+/* src/styles/app.css */
+@import 'tailwindcss';
+@import 'tw-animate-css';
+
+@custom-variant dark (&:is(.dark *));
+
+@theme inline {
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-chart-1: var(--chart-1);
+  --color-chart-2: var(--chart-2);
+  --color-chart-3: var(--chart-3);
+  --color-chart-4: var(--chart-4);
+  --color-chart-5: var(--chart-5);
+  --color-sidebar: var(--sidebar);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-ring: var(--sidebar-ring);
+}
+
+:root {
+  --radius: 0.625rem;
+  /* Snow white background with slight blue tint */
+  --background: oklch(0.98 0.008 230);
+  /* Deep winter forest dark blue-grey */
+  --foreground: oklch(0.25 0.035 245);
+  /* Frost-covered surface */
+  --card: oklch(0.96 0.012 220);
+  --card-foreground: oklch(0.25 0.035 245);
+  /* Crystal clear popover */
+  --popover: oklch(0.97 0.015 215);
+  --popover-foreground: oklch(0.25 0.035 245);
+  /* Ice blue primary - crystalline */
+  --primary: oklch(0.65 0.12 240);
+  --primary-foreground: oklch(0.98 0.008 230);
+  /* Misty grey secondary */
+  --secondary: oklch(0.88 0.015 235);
+  --secondary-foreground: oklch(0.35 0.045 250);
+  /* Soft winter mist */
+  --muted: oklch(0.92 0.012 225);
+  --muted-foreground: oklch(0.55 0.025 240);
+  /* Frozen pond accent */
+  --accent: oklch(0.75 0.08 235);
+  --accent-foreground: oklch(0.25 0.035 245);
+  /* Winter berry red for warnings */
+  --destructive: oklch(0.6 0.18 15);
+  /* Thin ice border */
+  --border: oklch(0.85 0.02 230);
+  /* Frosted input */
+  --input: oklch(0.9 0.015 225);
+  /* Crystal ring focus */
+  --ring: oklch(0.65 0.12 240);
+  /* Winter chart colors - inspired by frozen nature */
+  --chart-1: oklch(0.7 0.15 240); /* Ice blue */
+  --chart-2: oklch(0.6 0.12 180); /* Frozen teal */
+  --chart-3: oklch(0.45 0.08 260); /* Deep winter purple */
+  --chart-4: oklch(0.75 0.1 200); /* Frost cyan */
+  --chart-5: oklch(0.65 0.14 220); /* Crystal blue */
+  /* Sidebar - frosted glass effect */
+  --sidebar: oklch(0.94 0.015 228);
+  --sidebar-foreground: oklch(0.3 0.04 248);
+  --sidebar-primary: oklch(0.65 0.12 240);
+  --sidebar-primary-foreground: oklch(0.98 0.008 230);
+  --sidebar-accent: oklch(0.88 0.015 235);
+  --sidebar-accent-foreground: oklch(0.35 0.045 250);
+  --sidebar-border: oklch(0.82 0.025 232);
+  --sidebar-ring: oklch(0.65 0.12 240);
+}
+
+.dark {
+  /* Deep winter night sky */
+  --background: oklch(0.15 0.025 250);
+  /* Snow white text */
+  --foreground: oklch(0.95 0.012 220);
+  /* Dark frozen wood */
+  --card: oklch(0.22 0.035 245);
+  --card-foreground: oklch(0.95 0.012 220);
+  /* Midnight ice */
+  --popover: oklch(0.2 0.03 248);
+  --popover-foreground: oklch(0.95 0.012 220);
+  /* Bright ice crystal primary */
+  --primary: oklch(0.8 0.15 235);
+  --primary-foreground: oklch(0.15 0.025 250);
+  /* Dark winter mist */
+  --secondary: oklch(0.35 0.04 245);
+  --secondary-foreground: oklch(0.9 0.015 225);
+  /* Deep shadow muted */
+  --muted: oklch(0.28 0.038 248);
+  --muted-foreground: oklch(0.7 0.02 235);
+  /* Moonlit accent */
+  --accent: oklch(0.45 0.08 240);
+  --accent-foreground: oklch(0.95 0.012 220);
+  /* Winter warning - bright against dark */
+  --destructive: oklch(0.68 0.2 20);
+  /* Subtle winter border */
+  --border: oklch(0.4 0.05 245);
+  /* Dark ice input */
+  --input: oklch(0.32 0.042 246);
+  /* Bright crystal ring */
+  --ring: oklch(0.8 0.15 235);
+  /* Dark winter chart colors */
+  --chart-1: oklch(0.75 0.16 238); /* Bright ice */
+  --chart-2: oklch(0.65 0.14 185); /* Winter teal */
+  --chart-3: oklch(0.85 0.12 225); /* Pale frost */
+  --chart-4: oklch(0.6 0.18 265); /* Deep winter purple */
+  --chart-5: oklch(0.7 0.15 200); /* Arctic cyan */
+  /* Dark sidebar - like looking through frosted glass at night */
+  --sidebar: oklch(0.18 0.028 248);
+  --sidebar-foreground: oklch(0.9 0.015 225);
+  --sidebar-primary: oklch(0.75 0.16 238);
+  --sidebar-primary-foreground: oklch(0.15 0.025 250);
+  --sidebar-accent: oklch(0.35 0.04 245);
+  --sidebar-accent-foreground: oklch(0.9 0.015 225);
+  --sidebar-border: oklch(0.4 0.05 245);
+  --sidebar-ring: oklch(0.8 0.15 235);
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
+}
