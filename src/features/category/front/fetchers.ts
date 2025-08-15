@@ -102,3 +102,75 @@ export const getSubcategory = createServerFn({
 
     return subcategory[0];
   });
+
+// Get ALL parent categories for admin (including inactive)
+export const getAllParentCategoriesAdmin = createServerFn({
+  method: 'GET',
+}).handler(async () => {
+  return await db
+    .select()
+    .from(parentCategories)
+    .orderBy(asc(parentCategories.name));
+});
+
+// Get ALL subcategories with parent info for admin
+export const getAllSubcategoriesAdmin = createServerFn({
+  method: 'GET',
+}).handler(async () => {
+  return await db
+    .select({
+      id: subcategories.id,
+      name: subcategories.name,
+      slug: subcategories.slug,
+      description: subcategories.description,
+      isActive: subcategories.isActive,
+      parentCategoryId: subcategories.parentCategoryId,
+      parentName: parentCategories.name,
+      createdAt: subcategories.createdAt,
+      updatedAt: subcategories.updatedAt,
+    })
+    .from(subcategories)
+    .leftJoin(
+      parentCategories,
+      eq(subcategories.parentCategoryId, parentCategories.id)
+    )
+    .orderBy(asc(parentCategories.name), asc(subcategories.name));
+});
+
+// Get parent category by ID for editing
+export const getParentCategoryById = createServerFn({
+  method: 'GET',
+})
+  .validator((id: number) => id)
+  .handler(async ({ data: id }) => {
+    const [category] = await db
+      .select()
+      .from(parentCategories)
+      .where(eq(parentCategories.id, id))
+      .limit(1);
+
+    if (!category) {
+      throw new Error('دسته‌بندی یافت نشد');
+    }
+
+    return category;
+  });
+
+// Get subcategory by ID for editing
+export const getSubcategoryById = createServerFn({
+  method: 'GET',
+})
+  .validator((id: number) => id)
+  .handler(async ({ data: id }) => {
+    const [subcategory] = await db
+      .select()
+      .from(subcategories)
+      .where(eq(subcategories.id, id))
+      .limit(1);
+
+    if (!subcategory) {
+      throw new Error('زیردسته یافت نشد');
+    }
+
+    return subcategory;
+  });
