@@ -29,6 +29,9 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from '@/components/ui/tooltip';
+import { toast } from 'sonner';
+import { calculateProductPrice } from '@/features/cart/utils';
+import { useCart } from '@/features/cart/cart-provider';
 
 const fakeDelay = (ms: number) =>
   new Promise((resolve) => setTimeout(resolve, ms));
@@ -147,12 +150,15 @@ function ProductOptions({
 
 function ProductDetailPage() {
   const { product, deferredOptions } = Route.useLoaderData();
+  const { addItem } = useCart();
+
   const [selectedOptions, setSelectedOptions] = useState<
     Record<number, number>
   >({});
   const [quantity, setQuantity] = useState(1);
   const [totalPrice, setTotalPrice] = useState(product.basePrice);
   const [isAddingToCart, setIsAddingToCart] = useState(false);
+  const [allOptions, setAllOptions] = useState<any[]>([]);
 
   const formatPrice = (price: number) => {
     return new Intl.NumberFormat('fa-IR').format(price);
@@ -165,33 +171,84 @@ function ProductDetailPage() {
     }));
   };
 
+  // Calculate price when options change
   useEffect(() => {
-    let price = product.basePrice;
+    if (allOptions.length > 0) {
+      const selectedOptionsArray = Object.entries(selectedOptions).map(
+        ([groupId, optionId]) => ({
+          optionGroupId: parseInt(groupId),
+          optionId: optionId,
+        })
+      );
 
-    deferredOptions.then((optionGroups) => {
-      Object.entries(selectedOptions).forEach(([groupId, optionId]) => {
-        const group = optionGroups.find((g: any) => g.id === parseInt(groupId));
-        if (group) {
-          const option = group.options.find((o: any) => o.id === optionId);
-          if (option) {
-            price += option.priceModifier;
-          }
-        }
-      });
-      setTotalPrice(price);
-    });
-  }, [selectedOptions, product.basePrice, deferredOptions]);
+      // Flatten all options for price calculation
+      const flatOptions = allOptions.flatMap((group) =>
+        group.options.map((opt: any) => ({
+          id: opt.id,
+          optionGroupId: group.id,
+          priceModifier: opt.priceModifier,
+        }))
+      );
+
+      const calculatedPrice = calculateProductPrice(
+        product.basePrice,
+        selectedOptionsArray,
+        flatOptions
+      );
+
+      setTotalPrice(calculatedPrice);
+    }
+  }, [selectedOptions, product.basePrice, allOptions]);
+
+  const validateRequiredOptions = (optionGroups: any[]) => {
+    const requiredGroups = optionGroups.filter((group) => group.isRequired);
+
+    for (const group of requiredGroups) {
+      if (!selectedOptions[group.id]) {
+        toast.error(`لطفاً گزینه‌ای برای ${group.name} انتخاب کنید`);
+        return false;
+      }
+    }
+    return true;
+  };
 
   const handleAddToCart = async () => {
-    setIsAddingToCart(true);
-    await fakeDelay(1000);
-    console.log('Adding to cart:', {
-      product: product.id,
-      selectedOptions,
-      quantity,
-      totalPrice: totalPrice * quantity,
-    });
-    setIsAddingToCart(false);
+    try {
+      setIsAddingToCart(true);
+
+      // Wait for options to load if they haven't yet
+      const optionGroups = await deferredOptions;
+
+      // Validate required options
+      if (!validateRequiredOptions(optionGroups)) {
+        return;
+      }
+
+      // Convert selected options to the format expected by cart
+      const selectedOptionsArray = Object.entries(selectedOptions).map(
+        ([groupId, optionId]) => ({
+          optionGroupId: parseInt(groupId),
+          optionId: optionId,
+        })
+      );
+
+      const result = await addItem({
+        productId: product.id,
+        quantity: quantity,
+        selectedOptions: selectedOptionsArray,
+        unitPrice: totalPrice,
+      });
+
+      if (result.success) {
+        toast.success(`${product.name} با موفقیت به سبد خرید اضافه شد`);
+      } else {
+        toast.error('خطا در افزودن محصول به سبد خرید');
+      }
+    } catch (error: any) {
+      toast.error(error.message || 'خطا در افزودن محصول به سبد خرید');
+    } finally {
+      setIsAddingToCart(false);
+    }
   };
 
   return (
@@ -285,6 +342,8 @@ function ProductDetailPage() {
             <Await promise={deferredOptions} fallback={<OptionsSkeleton />}>
               {(optionGroups) => {
                 useEffect(() => {
+                  setAllOptions(optionGroups);
+
                   const defaults: Record<number, number> = {};
                   optionGroups.forEach((group: any) => {
                     const defaultOption = group.options.find(

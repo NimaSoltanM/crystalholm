@@ -18,9 +18,12 @@ import { Label } from '@/components/ui/label';
 import { toast } from 'sonner';
 import { Loader2, Phone, User, CheckCircle, ArrowRight } from 'lucide-react';
 import { sendVerificationCode, verifyCode, completeProfile } from '../actions';
+import { useCartSync } from '@/features/cart/use-cart-sync';
+import { getCurrentUser } from '../actions';
 
 const AuthPage = () => {
   const router = useRouter();
+  const { syncCart } = useCartSync();
   const [step, setStep] = useState('phone');
   const [phoneNumber, setPhoneNumber] = useState('');
   const [code, setCode] = useState('');
@@ -78,16 +81,34 @@ const AuthPage = () => {
 
     setIsLoading(true);
     try {
+      // First verify the code and create session
       const result = await verifyCode({ data: { phoneNumber, code } });
-      if (result.needsProfile) {
-        setStep('profile');
-        toast.success('کد تایید شد، لطفا اطلاعات خود را تکمیل کنید');
-      } else if (result.redirectTo) {
-        toast.success('خوش آمدید!');
-        router.navigate({ to: result.redirectTo });
-      } else {
-        toast.success('خوش آمدید!');
-        router.navigate({ to: '/profile' });
+
+      if (result.success) {
+        // Get the current user after successful verification
+        const user = await getCurrentUser();
+
+        if (user) {
+          // Sync cart with database (merges localStorage cart)
+          const syncResult = await syncCart(user.id);
+
+          if (!syncResult.success) {
+            // Cart sync failed, but login was successful
+            toast.error('خطا در همگام‌سازی سبد خرید، لطفاً صفحه را رفرش کنید');
+          }
+        }
+
+        // Handle navigation based on profile completion
+        if (result.needsProfile) {
+          setStep('profile');
+          toast.success('کد تایید شد، لطفا اطلاعات خود را تکمیل کنید');
+        } else if (result.redirectTo) {
+          toast.success('خوش آمدید!');
+          router.navigate({ to: result.redirectTo });
+        } else {
+          toast.success('خوش آمدید!');
+          router.navigate({ to: '/profile' });
+        }
       }
     } catch (error) {
       toast.error(error.message || 'کد تایید نامعتبر است');

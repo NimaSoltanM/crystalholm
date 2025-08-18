@@ -19,22 +19,26 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import type { NavbarUser } from '../types';
+import { logout } from '@/features/auth/actions';
+import { Link, useRouter } from '@tanstack/react-router';
 
 interface UserMenuProps {
   user: NavbarUser;
-  onLogin?: () => void;
-  onLogout?: () => void;
 }
 
-export function UserMenu({ user, onLogin, onLogout }: UserMenuProps) {
+export function UserMenu({ user }: UserMenuProps) {
   if (!user) {
     return (
-      <Button onClick={onLogin} size='sm' className='h-10'>
-        <LogIn className='ml-2 h-4 w-4' />
-        ورود | ثبت نام
-      </Button>
+      <Link to='/auth' className='flex items-center'>
+        <Button size='sm' className='h-10'>
+          <LogIn className='ml-2 h-4 w-4' />
+          ورود | ثبت نام
+        </Button>
+      </Link>
     );
   }
+
+  const router = useRouter();
 
   return (
     <DropdownMenu dir='rtl'>
@@ -66,7 +70,12 @@ export function UserMenu({ user, onLogin, onLogout }: UserMenuProps) {
           <span>تنظیمات</span>
         </DropdownMenuItem>
         <DropdownMenuSeparator />
-        <DropdownMenuItem onClick={onLogout} variant='destructive'>
+        <DropdownMenuItem
+          onClick={() => {
+            logout();
+            router.invalidate();
+          }}
+          variant='destructive'>
           <LogOut className='ml-2 h-4 w-4' />
           <span>خروج</span>
         </DropdownMenuItem>

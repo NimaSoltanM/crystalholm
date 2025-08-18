@@ -9,6 +9,8 @@ import {
   Scripts,
 } from '@tanstack/react-router';
 import { Toaster } from '@/components/ui/sonner';
+import { Provider } from 'jotai';
+import { AuthProvider } from '@/hooks/use-auth-initializer';
 
 export const Route = createRootRoute({
   head: () => ({
@@ -44,9 +46,13 @@ function RootDocument({ children }: Readonly<{ children: ReactNode }>) {
         <HeadContent />
       </head>
       <body dir='rtl'>
-        {children}
-        <Scripts />
-        <Toaster richColors />
+        <Provider>
+          <AuthProvider>
+            {children}
+            <Scripts />
+            <Toaster richColors />
+          </AuthProvider>
+        </Provider>
       </body>
     </html>
   );

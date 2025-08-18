@@ -13,6 +13,7 @@ import { Route as landingRouteRouteImport } from './routes/(landing)/route'
 import { Route as ProfileIndexRouteImport } from './routes/profile/index'
 import { Route as AuthIndexRouteImport } from './routes/auth/index'
 import { Route as landingIndexRouteImport } from './routes/(landing)/index'
+import { Route as landingCartRouteImport } from './routes/(landing)/cart'
 import { Route as AdminCategoriesIndexRouteImport } from './routes/admin/categories/index'
 import { Route as landingCategoriesIndexRouteImport } from './routes/(landing)/categories/index'
 import { Route as AdminCategoriesAddIndexRouteImport } from './routes/admin/categories/add/index'
@@ -37,6 +38,11 @@ const AuthIndexRoute = AuthIndexRouteImport.update({
 const landingIndexRoute = landingIndexRouteImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => landingRouteRoute,
+} as any)
+const landingCartRoute = landingCartRouteImport.update({
+  id: '/cart',
+  path: '/cart',
   getParentRoute: () => landingRouteRoute,
 } as any)
 const AdminCategoriesIndexRoute = AdminCategoriesIndexRouteImport.update({
@@ -74,6 +80,7 @@ const AdminCategoriesEditIdRoute = AdminCategoriesEditIdRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof landingIndexRoute
+  '/cart': typeof landingCartRoute
   '/auth': typeof AuthIndexRoute
   '/profile': typeof ProfileIndexRoute
   '/categories': typeof landingCategoriesIndexRoute
@@ -84,6 +91,7 @@ export interface FileRoutesByFullPath {
   '/admin/categories/add': typeof AdminCategoriesAddIndexRoute
 }
 export interface FileRoutesByTo {
+  '/cart': typeof landingCartRoute
   '/': typeof landingIndexRoute
   '/auth': typeof AuthIndexRoute
   '/profile': typeof ProfileIndexRoute
@@ -97,6 +105,7 @@ export interface FileRoutesByTo {
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/(landing)': typeof landingRouteRouteWithChildren
+  '/(landing)/cart': typeof landingCartRoute
   '/(landing)/': typeof landingIndexRoute
   '/auth/': typeof AuthIndexRoute
   '/profile/': typeof ProfileIndexRoute
@@ -111,6 +120,7 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/cart'
     | '/auth'
     | '/profile'
     | '/categories'
@@ -121,6 +131,7 @@ export interface FileRouteTypes {
     | '/admin/categories/add'
   fileRoutesByTo: FileRoutesByTo
   to:
+    | '/cart'
     | '/'
     | '/auth'
     | '/profile'
@@ -133,6 +144,7 @@ export interface FileRouteTypes {
   id:
     | '__root__'
     | '/(landing)'
+    | '/(landing)/cart'
     | '/(landing)/'
     | '/auth/'
     | '/profile/'
@@ -183,6 +195,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof landingIndexRouteImport
       parentRoute: typeof landingRouteRoute
     }
+    '/(landing)/cart': {
+      id: '/(landing)/cart'
+      path: '/cart'
+      fullPath: '/cart'
+      preLoaderRoute: typeof landingCartRouteImport
+      parentRoute: typeof landingRouteRoute
+    }
     '/admin/categories/': {
       id: '/admin/categories/'
       path: '/admin/categories'
@@ -229,6 +248,7 @@ declare module '@tanstack/react-router' {
 }
 
 interface landingRouteRouteChildren {
+  landingCartRoute: typeof landingCartRoute
   landingIndexRoute: typeof landingIndexRoute
   landingCategoriesIndexRoute: typeof landingCategoriesIndexRoute
   landingCategoriesSubCategorySlugIndexRoute: typeof landingCategoriesSubCategorySlugIndexRoute
@@ -236,6 +256,7 @@ interface landingRouteRouteChildren {
 }
 
 const landingRouteRouteChildren: landingRouteRouteChildren = {
+  landingCartRoute: landingCartRoute,
   landingIndexRoute: landingIndexRoute,
   landingCategoriesIndexRoute: landingCategoriesIndexRoute,
   landingCategoriesSubCategorySlugIndexRoute:

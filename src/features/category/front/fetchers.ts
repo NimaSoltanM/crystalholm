@@ -2,8 +2,7 @@ import { drizzle } from 'drizzle-orm/node-postgres';
 import { eq, and, asc } from 'drizzle-orm';
 import { parentCategories, subcategories } from '@/server/db/schema';
 import { createServerFn } from '@tanstack/react-start';
-
-const db = drizzle(process.env.DATABASE_URL!);
+import db from '@/server/db';
 
 // Get all parent categories
 export const getParentCategories = createServerFn({
